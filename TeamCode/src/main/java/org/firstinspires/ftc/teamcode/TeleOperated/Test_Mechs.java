@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-@TeleOp(name="Test Mechs")
+//@TeleOp(name="Test Mechs")
 public class Test_Mechs extends OpMode {
 
     //motors

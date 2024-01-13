@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Autonomous (name = "RedClose")
-public class RedClose extends LinearOpMode {
+public class DriveStraight extends LinearOpMode {
 
     DcMotor leftFront;
     DcMotor leftBack;
@@ -46,15 +46,15 @@ public class RedClose extends LinearOpMode {
         waitForStart();
 
 
-        drive(-24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, 0.5);
+        drive(-24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, 0.2);
         sleep(1000);
-        drive(18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 0.5);
+/*        drive(18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 0.5);
         sleep(1000);
         drive(-37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, 0.5);
         sleep(1200);
         drive(100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 0.5);
 
-
+*/
 
 
 

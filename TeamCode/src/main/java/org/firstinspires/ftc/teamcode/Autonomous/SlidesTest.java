@@ -1,25 +1,29 @@
-package org.firstinspires.ftc.teamcode.TeleOperated;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-//@TeleOp (name = "TestSlides")
-public class Test_Slides extends OpMode {
+@Autonomous(name = "SlidesTest")
+public class SlidesTest extends LinearOpMode {
 
     DcMotor leftLS;
     DcMotor rightLS;
+//    DcMotor roller;
 
     int leftLSPos;
     int rightLSPos;
 
+    final int TICKS_PER_INCH = 45; // 11.87 in per rev; 537.7 ticks per rev; 537.7/11.87 ticks per inch
+
 
     @Override
-    public void init() {
+    public void runOpMode() throws InterruptedException {
 
         leftLS = hardwareMap.get(DcMotor.class, "leftLS");
         rightLS = hardwareMap.get(DcMotor.class, "rightLS");
+//        roller = hardwareMap.get(DcMotor.class, "roller");
 
         leftLS.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightLS.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -31,23 +35,18 @@ public class Test_Slides extends OpMode {
 
         leftLS.setPower(0);
         rightLS.setPower(0);
-    }
 
-    public void loop() {
+        waitForStart();
+//        roller.setPower(0.7);
 
-        if (gamepad2.left_stick_y > 0.1 || gamepad2.left_stick_y < -0.1) {
-            leftLS.setPower(gamepad2.left_stick_y / 5);
-            rightLS.setPower(gamepad2.left_stick_y / 5);
-        }
+        up(27 * TICKS_PER_INCH, 27 * TICKS_PER_INCH, 0.5);
 
-        if (gamepad1.dpad_up) {
-            up(400, 400, 0.1);
-        }
-        if (gamepad1.dpad_down) {
-            up(-400, -400, 0.1);
-        }
+        sleep(1000);
+
+        up(-27 * TICKS_PER_INCH, -27 * TICKS_PER_INCH, 0.5);
 
     }
+
 
     public void up(int left, int right, double speed) {
 
@@ -63,7 +62,9 @@ public class Test_Slides extends OpMode {
         leftLS.setPower(speed);
         rightLS.setPower(speed);
 
-
+        while (opModeIsActive() && leftLS.isBusy() && rightLS.isBusy()) {
+            idle();
+        }
 
     }
 
