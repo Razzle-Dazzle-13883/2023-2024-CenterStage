@@ -13,6 +13,7 @@ public class DriveStraight extends LinearOpMode {
     DcMotor leftBack;
     DcMotor rightFront;
     DcMotor rightBack;
+    DcMotor roller;
 
     int leftFrontPos = 0;
     int leftBackPos = 0;
@@ -28,16 +29,19 @@ public class DriveStraight extends LinearOpMode {
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        roller = hardwareMap.get(DcMotor.class, "spinner");
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        roller.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        roller.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -45,19 +49,20 @@ public class DriveStraight extends LinearOpMode {
 
         waitForStart();
 
+        while (opModeIsActive()) {
+            roller.setPower(1);
+        }
+        //intake(100, 1);
 
+/*
         drive(-24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, 0.2);
         sleep(1000);
-/*        drive(18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 0.5);
+        drive(18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 0.5);
         sleep(1000);
         drive(-37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, 0.5);
         sleep(1200);
         drive(100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 0.5);
-
 */
-
-
-
 
 
 
@@ -96,6 +101,21 @@ public class DriveStraight extends LinearOpMode {
             telemetry.addData("RightFront", rightFront.getCurrentPosition());
             telemetry.addData("RightBack:", rightBack.getCurrentPosition());
 
+        }
+    }
+
+    public void intake (int r, double speed) {
+
+        int rollerPos = 0;
+        rollerPos -= r;
+        roller.setTargetPosition(rollerPos);
+
+        roller.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        roller.setPower(0);
+
+        while (opModeIsActive() && roller.isBusy()) {
+            idle();
         }
     }
 
