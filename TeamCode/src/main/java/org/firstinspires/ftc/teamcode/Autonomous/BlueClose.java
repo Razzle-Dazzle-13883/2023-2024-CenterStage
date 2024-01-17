@@ -5,20 +5,30 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous (name = "RedClose")
-public class DriveStraight extends LinearOpMode {
+@Autonomous (name = "BlueClose")
+public class BlueClose extends LinearOpMode {
 
     DcMotor leftFront;
     DcMotor leftBack;
     DcMotor rightFront;
     DcMotor rightBack;
+
     DcMotor roller;
+    DcMotor leftLS;
+    DcMotor rightLS;
+
+    Servo wrist;
+    Servo claw;
 
     int leftFrontPos = 0;
     int leftBackPos = 0;
     int rightFrontPos = 0;
     int rightBackPos = 0;
+
+    int leftLSPos;
+    int rightLSPos;
 
     final int TICKS_PER_INCH = 45; // 11.87 in per rev; 537.7 ticks per rev; 537.7/11.87 ticks per inch
 
@@ -29,41 +39,45 @@ public class DriveStraight extends LinearOpMode {
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+
         roller = hardwareMap.get(DcMotor.class, "spinner");
+        leftLS = hardwareMap.get(DcMotor.class, "leftLS");
+        rightLS = hardwareMap.get(DcMotor.class, "rightLS");
+
+        wrist = hardwareMap.get(Servo.class, "wrist");
+        claw = hardwareMap.get(Servo.class, "claw");
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        roller.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftLS.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLS.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        roller.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftLS.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightLS.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftLS.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         waitForStart();
 
-        while (opModeIsActive()) {
-            roller.setPower(1);
-        }
-        //intake(100, 1);
 
-/*
+
         drive(-24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, -24 * TICKS_PER_INCH, 0.2);
         sleep(1000);
-        drive(18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 0.5);
+        drive(-18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, 0.5);
         sleep(1000);
         drive(-37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, 0.5);
         sleep(1200);
-        drive(100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 0.5);
-*/
-
+        //       drive(100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 100 * TICKS_PER_INCH, 0.5);
 
 
     }
@@ -104,19 +118,26 @@ public class DriveStraight extends LinearOpMode {
         }
     }
 
-    public void intake (int r, double speed) {
+    public void up(int left, int right, double speed) {
 
-        int rollerPos = 0;
-        rollerPos -= r;
-        roller.setTargetPosition(rollerPos);
+        leftLSPos += left;
+        rightLSPos += right;
 
-        roller.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftLS.setTargetPosition(leftLSPos);
+        rightLS.setTargetPosition(rightLSPos);
 
-        roller.setPower(0);
+        leftLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (opModeIsActive() && roller.isBusy()) {
+        leftLS.setPower(speed);
+        rightLS.setPower(speed);
+
+        while (opModeIsActive() && leftLS.isBusy() && rightLS.isBusy()) {
             idle();
         }
+
     }
+
+
 
 }
