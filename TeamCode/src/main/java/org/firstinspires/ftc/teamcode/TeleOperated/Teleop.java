@@ -11,23 +11,26 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp
+@TeleOp (name = "Teleop")
 public class Teleop extends LinearOpMode {
     DcMotor leftFront;
     DcMotor leftBack;
     DcMotor rightFront;
     DcMotor rightBack;
+
     DcMotor roller;
-
-
     DcMotor leftLS;
     DcMotor rightLS;
 
-    Servo wrist;
+    Servo airplane;
+    Servo arm;
     Servo claw;
 
-    int leftLSPos;
-    int rightLSPos;
+    int leftPos;
+    int rightPos;
+
+    boolean armHold = false;
+
     final int TICKS_PER_INCH = 45; // 11.87 in per rev; 537.7 ticks per rev; 537.7/11.87 ticks per inch
 
 
@@ -39,37 +42,36 @@ public class Teleop extends LinearOpMode {
         rightFront = hardwareMap.dcMotor.get("rightFront");
         rightBack = hardwareMap.dcMotor.get("rightBack");
 
+
+        roller = hardwareMap.dcMotor.get("roller");
         leftLS = hardwareMap.dcMotor.get("leftLS");
         rightLS = hardwareMap.dcMotor.get("rightLS");
-        roller = hardwareMap.dcMotor.get("spinner");
 
-        wrist = hardwareMap.servo.get("wrist");
+
+        airplane = hardwareMap.servo.get("airplane");
+        arm = hardwareMap.servo.get("arm");
         claw = hardwareMap.servo.get("claw");
+
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftLS.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLS.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         leftLS.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightLS.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftLS.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLS.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftLS.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        IMU imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                                                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
-        imu.initialize(parameters);
+        rightLS.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
 
@@ -80,98 +82,102 @@ public class Teleop extends LinearOpMode {
 
             double y = gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
+            double rx = -gamepad1.right_stick_x;
 
             double frontLeftPower = 0;
             double backLeftPower = 0;
             double frontRightPower = 0;
             double backRightPower = 0;
 
-            if (gamepad1.options) {
-                imu.resetYaw();
+            frontLeftPower = (y + x + rx);
+            backLeftPower = (y - x + rx);
+            frontRightPower = (y - x - rx);
+            backRightPower = (y + x - rx);
+
+            leftFront.setPower(frontLeftPower);
+            leftBack.setPower(backLeftPower);
+            rightFront.setPower(frontRightPower);
+            rightBack.setPower(backRightPower);
+
+            if (gamepad1.left_stick_y == 0) {
+                leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            }
+            else if (gamepad1.right_stick_x == 0) {
+                leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
 
-            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
-            double rotX = x * Math.cos(-botHeading) - y  * Math.sin(-botHeading);
-            double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-
-            if (gamepad1.left_stick_button) {
-                frontLeftPower = (rotY + rotX + rx);
-                backLeftPower = (rotY - rotX + rx);
-                frontRightPower = (rotY - rotX - rx);
-                backRightPower = (rotY + rotX - rx);
-
-                leftFront.setPower(frontLeftPower);
-                leftBack.setPower(backLeftPower);
-                rightFront.setPower(frontRightPower);
-                rightBack.setPower(backRightPower);
-
-            }
-
-            if (gamepad1.right_stick_button) {
-                frontLeftPower = (y + x + rx);
-                backLeftPower = (y - x - rx);
-                frontRightPower = (y - x - rx);
-                backRightPower = (y + x - rx);
-
-                leftFront.setPower(frontLeftPower);
-                leftBack.setPower(backLeftPower);
-                rightFront.setPower(frontRightPower);
-                rightBack.setPower(backRightPower);
+            telemetry.addData("leftFront", leftFront.getCurrentPosition());
+            telemetry.addData("leftBack", leftBack.getCurrentPosition());
+            telemetry.addData("rightFront", rightFront.getCurrentPosition());
+            telemetry.addData("rightBack", rightBack.getCurrentPosition());
+            telemetry.update();
 
 
-            }
-
-
-            if (gamepad1.a) {
-                wrist.setPosition(0);
-            }
-
-            if (gamepad1.y) {
-                wrist.setPosition(0.1);
-            }
-
-            if (gamepad1.right_bumper) {
-                claw.setPosition(0.7);
-            }
-
-            if (gamepad1.left_bumper) {
-                claw.setPosition(0.5);
+            if(gamepad1.dpad_left){
+                airplane.setPosition(1);
             }
 
             if (gamepad1.x) {
-                roller.setPower(0.6);
-                if (gamepad1.x) {
-                    roller.setPower(0);
-                }
+                roller.setPower(.8);
+            }
+
+            if (gamepad1.a) {
+                roller.setPower(-.8);
+            }
+
+            if (gamepad1.dpad_right) {
+                roller.setPower(0);
+            }
+
+            if (gamepad1.right_trigger > 0.05) {
+                leftLS.setPower(-gamepad1.right_trigger/1.5);
+                rightLS.setPower(-gamepad1.right_trigger/1.5);
+            }
+
+            else if (gamepad1.left_trigger > 0.05) {
+                    leftLS.setPower(gamepad1.left_trigger / 1.5);
+                    rightLS.setPower(gamepad1.left_trigger / 1.5);
+            }
+
+            else if (gamepad1.right_trigger < 0.5 && gamepad1.left_trigger < 0.5) {
+                leftLS.setPower(0);
+                rightLS.setPower(0);
+            }
+
+
+            if (gamepad1.right_bumper) {
+                claw.setPosition(0.5);
+            }
+            telemetry.addData("Claw Pos: ", claw.getPosition());
+            if (gamepad1.left_bumper) {
+                claw.setPosition(0.45);
+            }
+
+            if (gamepad1.y) {
+                arm.setPosition(1);
             }
 
             if (gamepad1.b) {
-                roller.setPower(-0.6);
-                if (gamepad1.b) {
-                    roller.setPower(0);
-                }
+                arm.setPosition(-1);
             }
 
-            if (gamepad1.dpad_up) {
-                up (10 * TICKS_PER_INCH, 10 * TICKS_PER_INCH, 0.5);
-            }
-
-            if (gamepad1.dpad_down) {
-                up (-10 * TICKS_PER_INCH, -10 * TICKS_PER_INCH, 0.5);
-            }
 
 
         }
     }
+
     public void up(int left, int right, double speed) {
+        leftPos -= left;
+        rightPos -= right;
 
-        leftLSPos += left;
-        rightLSPos += right;
-
-        leftLS.setTargetPosition(leftLSPos);
-        rightLS.setTargetPosition(rightLSPos);
+        leftLS.setTargetPosition(leftPos);
+        rightLS.setTargetPosition(rightPos);
 
         leftLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -179,9 +185,20 @@ public class Teleop extends LinearOpMode {
         leftLS.setPower(speed);
         rightLS.setPower(speed);
 
-        while (opModeIsActive() && leftLS.isBusy() && rightLS.isBusy()) {
-            idle();
-        }
+    }
+
+    public void down(int left, int right, double speed) {
+        leftPos += left;
+        rightPos += right;
+
+        leftLS.setTargetPosition(leftPos);
+        rightLS.setTargetPosition(rightPos);
+
+        leftLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftLS.setPower(speed);
+        rightLS.setPower(speed);
 
     }
 
