@@ -23,8 +23,9 @@ public class Teleop extends LinearOpMode {
     DcMotor rightLS;
 
     Servo airplane;
-    Servo arm;
     Servo claw;
+    Servo armRight;
+    Servo armLeft;
 
     int leftPos;
     int rightPos;
@@ -49,7 +50,8 @@ public class Teleop extends LinearOpMode {
 
 
         airplane = hardwareMap.servo.get("airplane");
-        arm = hardwareMap.servo.get("arm");
+        armLeft = hardwareMap.servo.get("armLeft");
+        armRight = hardwareMap.servo.get("armRight");
         claw = hardwareMap.servo.get("claw");
 
 
@@ -119,55 +121,56 @@ public class Teleop extends LinearOpMode {
             telemetry.update();
 
 
-            if(gamepad1.dpad_left){
+            if(gamepad1.a){
                 airplane.setPosition(1);
             }
 
-            if (gamepad1.x) {
-                roller.setPower(.8);
+            if (gamepad2.x) {
+                roller.setPower(1);
             }
 
-            if (gamepad1.a) {
-                roller.setPower(-.8);
+            if (gamepad2.a) {
+                roller.setPower(-1);
             }
 
-            if (gamepad1.dpad_right) {
+            if (gamepad2.dpad_right) {
                 roller.setPower(0);
             }
 
-            if (gamepad1.right_trigger > 0.05) {
-                leftLS.setPower(-gamepad1.right_trigger/1.5);
-                rightLS.setPower(-gamepad1.right_trigger/1.5);
+            if (gamepad2.dpad_up) {
+                up(5 * TICKS_PER_INCH, 5 * TICKS_PER_INCH, 0.5);
             }
 
-            else if (gamepad1.left_trigger > 0.05) {
-                    leftLS.setPower(gamepad1.left_trigger / 1.5);
-                    rightLS.setPower(gamepad1.left_trigger / 1.5);
-            }
-
-            else if (gamepad1.right_trigger < 0.5 && gamepad1.left_trigger < 0.5) {
-                leftLS.setPower(0);
-                rightLS.setPower(0);
-            }
-
-
-            if (gamepad1.right_bumper) {
-                claw.setPosition(0.5);
+            if (gamepad2.right_bumper) {
+                claw.setPosition(1);
             }
             telemetry.addData("Claw Pos: ", claw.getPosition());
-            if (gamepad1.left_bumper) {
-                claw.setPosition(0.45);
+            if (gamepad2.left_bumper) {
+                claw.setPosition(0);
             }
 
-            if (gamepad1.y) {
-                arm.setPosition(1);
+            if (gamepad2.y) {
+                armRight.setPosition(0.4);
             }
 
-            if (gamepad1.b) {
-                arm.setPosition(-1);
+            if (gamepad2.b) {
+                armRight.setPosition(0);
             }
 
 
+            if (gamepad2.dpad_down) {
+                claw.setPosition(0);
+                claw.setPosition(1);
+                sleep(50);
+                armRight.setPosition(0);
+                down((20) * TICKS_PER_INCH, (20) * TICKS_PER_INCH, 0.5);
+                claw.setPosition(0);
+            }
+
+
+            if (gamepad2.dpad_left) {
+                down (5 * TICKS_PER_INCH, 5 * TICKS_PER_INCH, 0.1);
+            }
 
         }
     }

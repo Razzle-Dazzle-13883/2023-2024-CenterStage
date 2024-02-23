@@ -24,7 +24,7 @@ public class BlueFarCamera extends LinearOpMode {
     DcMotor leftLS;
     DcMotor rightLS;
 
-    Servo arm;
+    Servo armRight;
     Servo claw;
 
     int leftFrontPos = 0;
@@ -51,7 +51,7 @@ public class BlueFarCamera extends LinearOpMode {
         leftLS = hardwareMap.get(DcMotor.class, "leftLS");
         rightLS = hardwareMap.get(DcMotor.class, "rightLS");
 
-        arm = hardwareMap.get(Servo.class, "arm");
+        armRight = hardwareMap.get(Servo.class, "armRight");
         claw = hardwareMap.get(Servo.class, "claw");
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -102,6 +102,9 @@ public class BlueFarCamera extends LinearOpMode {
             drive( -14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, 0.5);
             sleep(2000);
 
+            outake();
+            sleep(300);
+
             //parking
             drive( 30 * TICKS_PER_INCH, -30 * TICKS_PER_INCH, -30 * TICKS_PER_INCH, 30 * TICKS_PER_INCH, 0.5);
             sleep(250);
@@ -120,6 +123,9 @@ public class BlueFarCamera extends LinearOpMode {
             sleep(500);
             drive( -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, -34 * TICKS_PER_INCH, -34 * TICKS_PER_INCH, 0.5);
             sleep(2000);
+
+            outake();
+            sleep(300);
 
             //parking
             drive( 28 * TICKS_PER_INCH, -28 * TICKS_PER_INCH, -28 * TICKS_PER_INCH, 28 * TICKS_PER_INCH, 0.25);
@@ -142,6 +148,9 @@ public class BlueFarCamera extends LinearOpMode {
             //driving to backdrop
             drive( -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 0.5);
             sleep(2000);
+
+            outake();
+            sleep(300);
 
             //parking
             drive( -33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, -33 * TICKS_PER_INCH, 0.5);
@@ -224,6 +233,19 @@ public class BlueFarCamera extends LinearOpMode {
         while (opModeIsActive() && leftLS.isBusy() && rightLS.isBusy()) {
             idle();
         }
+
+    }
+
+    public void outake() {
+        up(5 * TICKS_PER_INCH, 5 * TICKS_PER_INCH, 0.4);
+        sleep(100);
+        armRight.setPosition(0.4);
+        sleep(100);
+        claw.setPosition(0);
+        sleep(300);
+        claw.setPosition(1);
+        armRight.setPosition(0);
+        down(5 * TICKS_PER_INCH, 5 * TICKS_PER_INCH, 0.4);
 
     }
 
