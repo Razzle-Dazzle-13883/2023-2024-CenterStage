@@ -124,7 +124,7 @@ public class Teleop extends LinearOpMode {
             }
 
             if (gamepad1.x) {
-                roller.setPower(.8);
+                roller.setPower(1);
             }
 
             if (gamepad1.a) {
