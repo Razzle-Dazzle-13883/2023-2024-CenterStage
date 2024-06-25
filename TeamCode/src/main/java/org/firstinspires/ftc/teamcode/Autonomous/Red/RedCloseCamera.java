@@ -28,7 +28,7 @@ public class RedCloseCamera extends LinearOpMode {
     DcMotor leftLS;
     DcMotor rightLS;
 
-    Servo arm;
+    Servo armRight;
     Servo claw;
 
     int leftFrontPos = 0;
@@ -55,7 +55,7 @@ public class RedCloseCamera extends LinearOpMode {
         leftLS = hardwareMap.get(DcMotor.class, "leftLS");
         rightLS = hardwareMap.get(DcMotor.class, "rightLS");
 
-        arm = hardwareMap.get(Servo.class, "arm");
+        armRight = hardwareMap.get(Servo.class, "armRight");
         claw = hardwareMap.get(Servo.class, "claw");
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -86,7 +86,6 @@ public class RedCloseCamera extends LinearOpMode {
 
         waitForStart();
 
-
         if (visionProcessor.getSelection() == FirstVisionProcessor.Selected.LEFT) {
 
             //driving to spikemark
@@ -105,6 +104,9 @@ public class RedCloseCamera extends LinearOpMode {
             sleep(2000);
             drive(-8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, 0.5);
             sleep(2000);
+
+            outake();
+            sleep(300);
             //parking
             drive( -19 * TICKS_PER_INCH, 19 * TICKS_PER_INCH, 19 * TICKS_PER_INCH, -19 * TICKS_PER_INCH, 0.5);
             sleep(1000);
@@ -117,7 +119,7 @@ public class RedCloseCamera extends LinearOpMode {
             //driving to spikemark
             drive(33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 0.5);
             sleep(500);
-            drive( -6 * TICKS_PER_INCH, -6 * TICKS_PER_INCH, -6 * TICKS_PER_INCH, -6 * TICKS_PER_INCH, 0.5);
+            drive( -4 * TICKS_PER_INCH, -4 * TICKS_PER_INCH, -4 * TICKS_PER_INCH, -4 * TICKS_PER_INCH, 0.5);
             sleep(1000);
 
             //driving to backdrop
@@ -125,6 +127,9 @@ public class RedCloseCamera extends LinearOpMode {
             sleep(500);
             drive( -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, 0.5);
             sleep(2000);
+
+            outake();
+            sleep(300);
 
             //parking
             drive( 28 * TICKS_PER_INCH, -28 * TICKS_PER_INCH, -28 * TICKS_PER_INCH, 28 * TICKS_PER_INCH, 0.25);
@@ -149,6 +154,9 @@ public class RedCloseCamera extends LinearOpMode {
             //driving to backdrop
             drive( -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 0.5);
             sleep(2000);
+
+            outake();
+            sleep(300);
 
             //parking
             drive( -33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, -33 * TICKS_PER_INCH, 0.5);
@@ -229,6 +237,19 @@ public class RedCloseCamera extends LinearOpMode {
         while (opModeIsActive() && leftLS.isBusy() && rightLS.isBusy()) {
             idle();
         }
+
+    }
+
+    public void outake() {
+        up(5 * TICKS_PER_INCH, 5 * TICKS_PER_INCH, 0.4);
+        sleep(100);
+        armRight.setPosition(0.4);
+        sleep(100);
+        claw.setPosition(0);
+        sleep(300);
+        claw.setPosition(1);
+        armRight.setPosition(0);
+        down(5 * TICKS_PER_INCH, 5 * TICKS_PER_INCH, 0.4);
 
     }
 

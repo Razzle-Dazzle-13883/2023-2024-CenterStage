@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous.Blue;
+package org.firstinspires.ftc.teamcode.Autonomous.Red;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,10 +10,14 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Autonomous.FirstVisionProcessor;
 import org.firstinspires.ftc.vision.VisionPortal;
 
+import org.firstinspires.ftc.teamcode.Autonomous.Red.Red;
+
 @Autonomous()
-public class BlueCloseCamera extends LinearOpMode {
+public class RedFarCamera extends LinearOpMode {
     private FirstVisionProcessor visionProcessor;
     private VisionPortal visionPortal;
+
+    Red red = new Red();
 
     DcMotor leftFront;
     DcMotor leftBack;
@@ -78,112 +82,87 @@ public class BlueCloseCamera extends LinearOpMode {
         visionPortal = VisionPortal.easyCreateWithDefaults(
                 hardwareMap.get(WebcamName.class, "Webcam 1"), visionProcessor);
 
-        telemetry.addData("Identified", visionProcessor.getSelection());
-        telemetry.update();
-
 
 
         waitForStart();
 
-        int left = 0;
-        int middle = 0;
-        int right = 0;
 
-        for (int i = 0; i < 100; i++) {
-            if (visionProcessor.getSelection() == FirstVisionProcessor.Selected.LEFT) {
-                left++;
-            }
-            else if(visionProcessor.getSelection() == FirstVisionProcessor.Selected.MIDDLE) {
-                middle++;
-            }
-            else if (visionProcessor.getSelection() == FirstVisionProcessor.Selected.RIGHT) {
-                right++;
-            }
+        if (visionProcessor.getSelection() == FirstVisionProcessor.Selected.LEFT) {
+
+            //driving to spikemark
+            drive(26 * TICKS_PER_INCH, 26 * TICKS_PER_INCH, 26 * TICKS_PER_INCH, 26 * TICKS_PER_INCH, 0.5);
+            sleep(2000);
+            drive(-18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, 0.5);
+            sleep(2000);
+            drive(7 * TICKS_PER_INCH, 7 * TICKS_PER_INCH, 7 * TICKS_PER_INCH, 7 * TICKS_PER_INCH, 0.5);
+            sleep(2000);
+
+            //driving to backdrop
+            drive( -90 * TICKS_PER_INCH, -90 * TICKS_PER_INCH, -89 * TICKS_PER_INCH, -90 * TICKS_PER_INCH, 0.5);
+            sleep(2000);
+
+            drive (-11 * TICKS_PER_INCH, 11 * TICKS_PER_INCH, 11 * TICKS_PER_INCH, -11 * TICKS_PER_INCH, 0.5);
+            sleep(2000);
+            drive(-8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, 0.5);
+            sleep(2000);
+
+            outake();
+            sleep(300);
+            //parking
+            drive( -19 * TICKS_PER_INCH, 19 * TICKS_PER_INCH, 19 * TICKS_PER_INCH, -19 * TICKS_PER_INCH, 0.5);
+            sleep(1000);
+            drive (-14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, 0.5);
+            sleep(2000);
+
         }
+        else if (visionProcessor.getSelection() == FirstVisionProcessor.Selected.MIDDLE) {
 
-         if (left > middle && left > right) {
+            //driving to spikemark
+            drive(33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 0.5);
+            drive( -9 * TICKS_PER_INCH, -9 * TICKS_PER_INCH, -9 * TICKS_PER_INCH, -9 * TICKS_PER_INCH, 0.5);
+            sleep(1000);
 
-             //driving to spikemark
-             drive(-12 * TICKS_PER_INCH, 12 * TICKS_PER_INCH, 12 * TICKS_PER_INCH, -12 * TICKS_PER_INCH, 0.5);
-             sleep(1000);
-             drive(30 * TICKS_PER_INCH, 30 * TICKS_PER_INCH, 30 * TICKS_PER_INCH, 30 * TICKS_PER_INCH, 0.5);
-             sleep(500);
-             drive(17 * TICKS_PER_INCH, 17 * TICKS_PER_INCH, -17 * TICKS_PER_INCH, -17 * TICKS_PER_INCH, 0.5);
-             sleep(500);
-             drive(-10 * TICKS_PER_INCH, -10 * TICKS_PER_INCH, -10 * TICKS_PER_INCH, -10 * TICKS_PER_INCH, 0.5);
-             sleep(500);
-             //roll out pixel
-             drive(2 * TICKS_PER_INCH, 2 * TICKS_PER_INCH, -2 * TICKS_PER_INCH, -2 * TICKS_PER_INCH, 0.5);
-             //driving to backdrop
-             drive( -14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, 0.5);
-             sleep(2000);
+            //driving to backdrop
+            drive(-18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, 0.5);
+            sleep(500);
+            drive( -90 * TICKS_PER_INCH, -90 * TICKS_PER_INCH, -90 * TICKS_PER_INCH, -90 * TICKS_PER_INCH, 0.5);
+            sleep(2000);
 
-             outake();
-             sleep(300);
+            outake();
+            sleep(300);
+            //parking
+            drive( -28 * TICKS_PER_INCH, 28 * TICKS_PER_INCH, 28 * TICKS_PER_INCH, -28 * TICKS_PER_INCH, 0.5);
+            sleep(250);
+            drive (-14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, -14 * TICKS_PER_INCH, 0.5);
 
-             //parking
-             drive( 30 * TICKS_PER_INCH, -30 * TICKS_PER_INCH, -30 * TICKS_PER_INCH, 30 * TICKS_PER_INCH, 0.5);
-             sleep(250);
-             drive (-8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, 0.5);
+        }
+        else if (visionProcessor.getSelection() == FirstVisionProcessor.Selected.RIGHT) {
 
+            //driving to spikemark
+            drive(-12 * TICKS_PER_INCH, 12 * TICKS_PER_INCH, 12 * TICKS_PER_INCH, -12 * TICKS_PER_INCH, 0.5);
+            sleep(1000);
+            drive(30 * TICKS_PER_INCH, 30 * TICKS_PER_INCH, 30 * TICKS_PER_INCH, 30 * TICKS_PER_INCH, 0.5);
+            sleep(500);
+            drive(-20 * TICKS_PER_INCH, -20 * TICKS_PER_INCH, 20 * TICKS_PER_INCH, 20 * TICKS_PER_INCH, 0.5);
+            sleep(500);
+            drive(-10 * TICKS_PER_INCH, -10 * TICKS_PER_INCH, -10 * TICKS_PER_INCH, -10 * TICKS_PER_INCH, 0.5);
+            sleep(500);
+            //roll out pixel
+            drive(15 * TICKS_PER_INCH, -15 * TICKS_PER_INCH, -15 * TICKS_PER_INCH, 15 * TICKS_PER_INCH, 0.5);
+            //driving to backdrop
+            drive( -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 0.5);
+            sleep(2000);
 
-         }
-         else if (middle > left && middle > right) {
+            outake();
+            sleep(300);
 
-             //driving to spikemark
-             drive (-4 * TICKS_PER_INCH, 4 * TICKS_PER_INCH, 4 * TICKS_PER_INCH, -4 * TICKS_PER_INCH, 0.5);
-             drive(33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 0.5);
-             sleep(500);
-             drive( -6 * TICKS_PER_INCH, -6 * TICKS_PER_INCH, -6 * TICKS_PER_INCH, -6 * TICKS_PER_INCH, 0.5);
-             sleep(1000);
-
-             roller.setPower(-0.6);
-             sleep(3000);
-             roller.setPower(0);
-
-             //driving to backdrop
-             drive(18 * TICKS_PER_INCH, 18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 0.5);
-             sleep(500);
-             drive( -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, -37 * TICKS_PER_INCH, 0.5);
-             sleep(2000);
-
-             outake();
-             sleep(300);
-             //parking
-             drive( 28 * TICKS_PER_INCH, -28 * TICKS_PER_INCH, -28 * TICKS_PER_INCH, 28 * TICKS_PER_INCH, 0.25);
-             sleep(500);
-             drive (-8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, 0.5);
+            //parking
+            drive( -33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, -33 * TICKS_PER_INCH, 0.5);
+            sleep(250);
+            drive (-8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, 0.5);
 
 
-         }
-         else if (right > middle && right > left) {
-
-             //driving to spikemark
-             drive (-4 * TICKS_PER_INCH, 4 * TICKS_PER_INCH, 4 * TICKS_PER_INCH, -4 * TICKS_PER_INCH, 0.5);
-             drive(-12 * TICKS_PER_INCH, -12 * TICKS_PER_INCH, -12 * TICKS_PER_INCH, -12 * TICKS_PER_INCH, 0.5);
-             sleep(1000);
-             drive(30 * TICKS_PER_INCH, 30 * TICKS_PER_INCH, 30 * TICKS_PER_INCH, 30 * TICKS_PER_INCH, 0.5);
-             sleep(500);
-             drive(-20 * TICKS_PER_INCH, -20 * TICKS_PER_INCH, 20 * TICKS_PER_INCH, 20 * TICKS_PER_INCH, 0.5);
-             sleep(500);
-             drive(-10 * TICKS_PER_INCH, -10 * TICKS_PER_INCH, -10 * TICKS_PER_INCH, -10 * TICKS_PER_INCH, 0.5);
-             sleep(500);
-             //roll out pixel
-             drive(15 * TICKS_PER_INCH, -15 * TICKS_PER_INCH, -15 * TICKS_PER_INCH, 15 * TICKS_PER_INCH, 0.5);
-             //driving to backdrop
-             drive( -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, -18 * TICKS_PER_INCH, 0.5);
-             sleep(2000);
-
-             outake();
-             sleep(300);
-
-             //parking
-             drive( -33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, 33 * TICKS_PER_INCH, -33 * TICKS_PER_INCH, 0.5);
-             sleep(250);
-             drive (-8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, -8 * TICKS_PER_INCH, 0.5);
-
-
-         }
+        }
 
     }
 
@@ -215,11 +194,8 @@ public class BlueCloseCamera extends LinearOpMode {
 
         while (opModeIsActive() && leftFront.isBusy() &&  leftBack.isBusy() && rightFront.isBusy() &&  rightBack.isBusy()) {
             idle();
-            telemetry.addData("LeftFront: ", leftFront.getCurrentPosition());
-            telemetry.addData("LeftBack: ", leftBack.getCurrentPosition());
-            telemetry.addData("RightFront", rightFront.getCurrentPosition());
-            telemetry.addData("RightBack:", rightBack.getCurrentPosition());
-
+            telemetry.addData("Selection", visionProcessor.getSelection());
+            telemetry.update();
         }
     }
 
@@ -263,7 +239,7 @@ public class BlueCloseCamera extends LinearOpMode {
     }
 
     public void outake() {
-        up(10 * TICKS_PER_INCH, 10 * TICKS_PER_INCH, 0.4);
+        up(5 * TICKS_PER_INCH, 5 * TICKS_PER_INCH, 0.4);
         sleep(100);
         armRight.setPosition(0.4);
         sleep(100);
@@ -271,7 +247,7 @@ public class BlueCloseCamera extends LinearOpMode {
         sleep(300);
         claw.setPosition(1);
         armRight.setPosition(0);
-        down(10 * TICKS_PER_INCH, 10 * TICKS_PER_INCH, 0.4);
+        down(5 * TICKS_PER_INCH, 5 * TICKS_PER_INCH, 0.4);
 
     }
 

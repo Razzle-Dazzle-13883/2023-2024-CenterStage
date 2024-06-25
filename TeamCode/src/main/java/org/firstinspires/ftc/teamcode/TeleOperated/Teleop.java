@@ -1,18 +1,15 @@
 package org.firstinspires.ftc.teamcode.TeleOperated;
 
-import com.qualcomm.hardware.bosch.BHI260IMU;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp (name = "Teleop")
 public class Teleop extends LinearOpMode {
+
     DcMotor leftFront;
     DcMotor leftBack;
     DcMotor rightFront;
@@ -23,15 +20,14 @@ public class Teleop extends LinearOpMode {
     DcMotor rightLS;
 
     Servo airplane;
-    Servo arm;
     Servo claw;
+    Servo armRight;
+    Servo armLeft;
 
-    int leftPos;
-    int rightPos;
+    int leftPos;// linear slide left
+    int rightPos;// linear slide right
 
-    boolean armHold = false;
-
-    final int TICKS_PER_INCH = 45; // 11.87 in per rev; 537.7 ticks per rev; 537.7/11.87 ticks per inch
+     final int TICKS_PER_INCH = 45; // 11.87 in per rev; 537.7 ticks per rev; 537.7/11.87 ticks per inch
 
 
     @Override
@@ -49,7 +45,8 @@ public class Teleop extends LinearOpMode {
 
 
         airplane = hardwareMap.servo.get("airplane");
-        arm = hardwareMap.servo.get("arm");
+        armLeft = hardwareMap.servo.get("armLeft");
+        armRight = hardwareMap.servo.get("armRight");
         claw = hardwareMap.servo.get("claw");
 
 
@@ -104,8 +101,7 @@ public class Teleop extends LinearOpMode {
                 leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            }
-            else if (gamepad1.right_stick_x == 0) {
+            } else if (gamepad1.right_stick_x == 0) {
                 leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -119,87 +115,93 @@ public class Teleop extends LinearOpMode {
             telemetry.update();
 
 
-            if(gamepad1.dpad_left){
+            if (gamepad1.a) {
                 airplane.setPosition(1);
             }
 
             if (gamepad1.x) {
-                roller.setPower(1);
+                if (gamepad2.x) {
+                    roller.setPower(1);
+                }
+
+                if (gamepad2.a) {
+                    roller.setPower(-1);
+                }
+
+                if (gamepad2.dpad_right) {
+                    roller.setPower(0);
+                }
+
+                if (gamepad2.dpad_up) {
+                   up(5 * TICKS_PER_INCH, 5 * TICKS_PER_INCH, 0.5);
+                }
+
+                if (gamepad2.right_bumper) {
+                    claw.setPosition(1);
+                }
+                telemetry.addData("Claw Pos: ", claw.getPosition());
+                if (gamepad2.left_bumper) {
+                    claw.setPosition(0);
+                }
+
+                if (gamepad2.y) {
+                    armRight.setPosition(0.4);
+                }
+
+                if (gamepad2.b) {
+                    armRight.setPosition(0);
+                }
+
+
+                if (gamepad2.dpad_down) {
+                    claw.setPosition(0);
+                    claw.setPosition(1);
+                    sleep(50);
+                    armRight.setPosition(0);
+                    down((20) * TICKS_PER_INCH, (20) * TICKS_PER_INCH, 0.5);
+                    claw.setPosition(0);
+                }
+
+
+                if (gamepad2.dpad_left) {
+                    down(5 * TICKS_PER_INCH, 5 * TICKS_PER_INCH, 0.1);
+                }
+
             }
-
-            if (gamepad1.a) {
-                roller.setPower(-.8);
-            }
-
-            if (gamepad1.dpad_right) {
-                roller.setPower(0);
-            }
-
-            if (gamepad1.right_trigger > 0.05) {
-                leftLS.setPower(-gamepad1.right_trigger/1.5);
-                rightLS.setPower(-gamepad1.right_trigger/1.5);
-            }
-
-            else if (gamepad1.left_trigger > 0.05) {
-                    leftLS.setPower(gamepad1.left_trigger / 1.5);
-                    rightLS.setPower(gamepad1.left_trigger / 1.5);
-            }
-
-            else if (gamepad1.right_trigger < 0.5 && gamepad1.left_trigger < 0.5) {
-                leftLS.setPower(0);
-                rightLS.setPower(0);
-            }
-
-
-            if (gamepad1.right_bumper) {
-                claw.setPosition(0.5);
-            }
-            telemetry.addData("Claw Pos: ", claw.getPosition());
-            if (gamepad1.left_bumper) {
-                claw.setPosition(0.45);
-            }
-
-            if (gamepad1.y) {
-                arm.setPosition(1);
-            }
-
-            if (gamepad1.b) {
-                arm.setPosition(-1);
-            }
-
-
+        }
 
         }
+
+        public void up (int left, int right, double speed) {
+
+            leftPos -= left;
+            rightPos -= right;
+
+            leftLS.setTargetPosition(leftPos);
+            rightLS.setTargetPosition(rightPos);
+
+            leftLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            leftLS.setPower(speed);
+            rightLS.setPower(speed);
+
+        }
+        public void down ( int left, int right, double speed){
+            leftPos += left;
+            rightPos += right;
+
+            leftLS.setTargetPosition(leftPos);
+            rightLS.setTargetPosition(rightPos);
+
+            leftLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            leftLS.setPower(speed);
+            rightLS.setPower(speed);
+
+        }
+
     }
 
-    public void up(int left, int right, double speed) {
-        leftPos -= left;
-        rightPos -= right;
 
-        leftLS.setTargetPosition(leftPos);
-        rightLS.setTargetPosition(rightPos);
-
-        leftLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        leftLS.setPower(speed);
-        rightLS.setPower(speed);
-
-    }
-
-    public void down(int left, int right, double speed) {
-        leftPos += left;
-        rightPos += right;
-
-        leftLS.setTargetPosition(leftPos);
-        rightLS.setTargetPosition(rightPos);
-
-        leftLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightLS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        leftLS.setPower(speed);
-        rightLS.setPower(speed);
-
-    }
-
-}
